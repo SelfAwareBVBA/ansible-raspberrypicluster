@@ -1,0 +1,5 @@
+smbserver: 192.168.2.100
+smbpath: XxX
+smbmount: /mnt/nfs
+smbuser: XxX
+smbpasswd: XxX

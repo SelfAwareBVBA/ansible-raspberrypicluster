@@ -1,0 +1,41 @@
+# This task is used to mount a filesystem via NFS.
+# 
+# Variables you need to define:
+# nfsserver:   the nfs server to mount from
+# nfspath:     the remote filesystem to mount from the nfs server
+# nfsmount:    the directory where you want to mount the filesystem.
+# nfsoptions:  options to use when mounting the filesystem. If not
+#              defined, `rw,sync` will be used.
+#
+# Please note that the task will check if the {{nfsmount}} directory
+# exists and create it otherwise.
+#
+
+- name: install nfs client
+  apt: 
+    pkg: cifs-utils 
+    state: present
+
+- name: Ensure {{smbmount}} mounting directory exists
+  file: 
+    path: "{{smbmount}}" 
+    state: directory
+
+- name: Ensure a Samba group exists (only user in this group will be able to write to the share)
+  group:
+    name: samba
+    state: present
+
+- name: Add the pi user to the Samba group
+  user: name=pi groups=samba append=yes
+
+- name: Add the root user to the Samba group
+  user: name=root groups=samba append=yes
+
+- name: "Mount the //{{smbserver}}/{{smbpath}} onto {{smbmount}} with options: {{smboptions}}"
+  mount:
+    name: "{{smbmount}}"
+    src: "//{{smbserver}}/{{smbpath}}"
+    fstype: cifs
+    opts: "iocharset=utf8,user={{smbuser}},passwd={{smbpasswd}},gid=samba,dir_mode=0770"
+    state: present

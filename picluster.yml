@@ -1,0 +1,10 @@
+---
+
+- hosts: pis
+  become: yes
+  remote_user: pi
+  roles:
+    - common
+    - ssh
+    - samba
+    - docker
